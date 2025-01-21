@@ -16,9 +16,15 @@ struct AnimalListView: View {
             List(animals) { animal in
                 NavigationLink(destination: AnimalDetailView(animal: animal)) {
                     HStack {
-                        AsyncImage(url: URL(string: animal.imagen))
-                            .frame(width: 50, height: 50)
-                            .clipShape(Circle())
+                        AsyncImage(url: URL(string: animal.imagen)) { image in
+                            image
+                                .resizable()
+                                .scaledToFit()
+                        } placeholder: {
+                            Color.gray
+                        }
+                        .frame(width: 120, height: 120)
+                        .clipShape(Rectangle())
                         
                         VStack(alignment: .leading) {
                             Text(animal.nombre)
@@ -29,7 +35,7 @@ struct AnimalListView: View {
                     }
                 }
             }
-            .navigationTitle("Animales")
+            .navigationTitle("Animales en Adopción")
         }
         .onAppear {
             apiService.fetchAnimals { animals in
@@ -39,6 +45,8 @@ struct AnimalListView: View {
     }
 }
 
-#Preview {
-    AnimalListView()
+struct AnimalListView_Previews: PreviewProvider {
+    static var previews: some View {
+        AnimalListView()
+    }
 }
