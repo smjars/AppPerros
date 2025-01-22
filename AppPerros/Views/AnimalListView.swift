@@ -47,7 +47,6 @@ struct AnimalListView: View {
                         }
                     }
                 }
-                .padding(.top, -70)
                 Text("Correo: \(userEmail)")
                     .padding()
             }
