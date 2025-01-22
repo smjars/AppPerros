@@ -101,6 +101,7 @@ struct LoginView_Previews: PreviewProvider {
 */
 
 import SwiftUI
+import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 import GoogleSignIn
@@ -198,23 +199,35 @@ struct LoginView: View {
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
         let config = GIDConfiguration(clientID: clientID)
         
-        GIDSignIn.sharedInstance.signIn(with: config, presenting: getRootViewController()) { user, error in
+        GIDSignIn.sharedInstance.signIn(withPresenting: getRootViewController()) { result, error in
             if let error = error {
                 errorMessage = "Falló iniciar sesión con Google: \(error.localizedDescription)"
                 return
             }
-            guard let authentication = user?.authentication,
-                  let idToken = authentication.idToken else { return }
+            
+            guard let user = result?.user,
+                  let idToken = user.idToken?.tokenString else { return }
+            let accessToken = user.accessToken.tokenString
             
             let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                           accessToken: authentication.accessToken)
+                                                           accessToken: accessToken)
             
             Auth.auth().signIn(with: credential) { result, error in
                 if let error = error {
                     errorMessage = "Falló iniciar sesión con Google: \(error.localizedDescription)"
                     return
                 }
-                isUserLoggedIn = true
+                
+                // Guardar datos del usuario en Firestore
+                guard let uid = result?.user.uid else { return }
+                let userData = ["email": result?.user.email ?? ""]
+                Firestore.firestore().collection("users").document(uid).setData(userData) { error in
+                    if let error = error {
+                        errorMessage = "Fallo guardar datos de usuario: \(error.localizedDescription)"
+                        return
+                    }
+                    isUserLoggedIn = true
+                }
             }
         }
     }
