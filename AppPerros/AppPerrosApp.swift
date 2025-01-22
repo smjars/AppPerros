@@ -29,13 +29,4 @@ struct AppPerrosApp: App {
       }
     }
 }
-/*
- asi es como lo recomienda google, lo deje como lo tenia
-  
- 
- var body: some Scene {
-     WindowGroup {
-         ContentView()
-     }
- }
-}*/
+
