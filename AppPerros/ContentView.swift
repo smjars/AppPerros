@@ -6,10 +6,17 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ContentView: View {
+    @State private var isUserLoggedIn = Auth.auth().currentUser != nil
+    
     var body: some View {
-        AnimalListView()
+        if isUserLoggedIn {
+            AnimalListView()
+        } else {
+            LoginView()
+        }
     }
 }
 

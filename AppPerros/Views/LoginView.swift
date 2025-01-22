@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 
@@ -18,9 +17,9 @@ struct LoginView: View {
 
     var body: some View {
         VStack {
-            Picker(selection: $isLoginMode, label: Text("Login Mode")) {
-                Text("Login").tag(true)
-                Text("Sign Up").tag(false)
+            Picker(selection: $isLoginMode, label: Text("Modo Registro")) {
+                Text("Iniciar Sesión").tag(true)
+                Text("Registrarse").tag(false)
             }.pickerStyle(SegmentedPickerStyle())
                 .padding()
 
@@ -29,13 +28,13 @@ struct LoginView: View {
                 .autocapitalization(.none)
                 .padding()
 
-            SecureField("Password", text: $password)
+            SecureField("Contraseña", text: $password)
                 .padding()
 
             Button(action: {
                 handleAction()
             }) {
-                Text(isLoginMode ? "Login" : "Sign Up")
+                Text(isLoginMode ? "Iniciar Sesión" : "Registrarse")
                     .font(.headline)
                     .foregroundColor(.white)
                     .padding()
@@ -63,7 +62,7 @@ struct LoginView: View {
     private func loginUser() {
         Auth.auth().signIn(withEmail: email, password: password) { result, error in
             if let error = error {
-                errorMessage = "Failed to login: \(error.localizedDescription)"
+                errorMessage = "Falló iniciar sesión: \(error.localizedDescription)"
                 return
             }
             // Handle successful login
@@ -73,7 +72,7 @@ struct LoginView: View {
     private func signUpUser() {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {
-                errorMessage = "Failed to sign up: \(error.localizedDescription)"
+                errorMessage = "Falló iniciar registrarse: \(error.localizedDescription)"
                 return
             }
             // Save user data to Firestore
@@ -81,7 +80,7 @@ struct LoginView: View {
             let userData = ["email": email]
             Firestore.firestore().collection("users").document(uid).setData(userData) { error in
                 if let error = error {
-                    errorMessage = "Failed to save user data: \(error.localizedDescription)"
+                    errorMessage = "Fallo guardar datos de usuario: \(error.localizedDescription)"
                     return
                 }
                 // Handle successful sign up
